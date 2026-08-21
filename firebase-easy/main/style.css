@@ -1,0 +1,102 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  height: 10vh;
+  background-color: rgb(0, 102, 255);
+}
+body {
+  font-family: Arial, sans-serif;
+  background-color: rgba(27, 27, 27, 0.986);
+  color:white;
+}
+#logo {
+  display: flex;
+  width: 150px;
+  height: auto;
+}
+
+.form, .filtro {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input { /* Tamanho confortável para leitura */
+  padding: 12px;
+  border-radius: 10px;
+  background-color: rgb(12, 39, 80);
+  color: white;
+  border: 1px solid transparent;
+  outline: none;
+}
+
+
+button {
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: rgba(70, 68, 68, 0.986);  
+  border: 1px solid #271402;
+}
+
+li:hover {
+  background-color: #313131;
+}
+
+button {
+  padding: 5px 10px;
+  margin-left: 5px;
+}
+
+.filtro input {
+  padding: 8px;
+}
+
+.linha-aluno {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.linha-aluno input {
+  width: 100px;
+  padding: 5px;
+}
+
+.btn-salvar-edicao {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#btnSair {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #d32f2f;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#btnSair:hover {
+    background-color: #b71c1c;
+}
