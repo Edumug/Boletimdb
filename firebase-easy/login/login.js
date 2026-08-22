@@ -36,7 +36,7 @@ btnEntrar.addEventListener("click", () => {
 
     if (usuario) {
     sessionStorage.setItem("logado", "true");
-    window.location.replace("../main/index.html");
+    window.location.replace("../main/main.html");
 }
  else {
 
