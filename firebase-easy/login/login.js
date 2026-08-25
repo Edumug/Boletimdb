@@ -12,7 +12,6 @@ const logins = [
     ["abner", "tompearl"]
 ];
 
-// Mostrar / ocultar senha
 btnMostrarSenha.addEventListener("click", () => {
     if (senhaInput.type === "password") {
         senhaInput.type = "text";
@@ -23,11 +22,9 @@ btnMostrarSenha.addEventListener("click", () => {
     }
 });
 
-// Entrar
 btnEntrar.addEventListener("click", () => {
     const login = loginInput.value.trim();
     const senha = senhaInput.value;
-
     const contasCriadas = JSON.parse(localStorage.getItem("contasBoletim") || "[]");
 
     const usuario = logins.find(u => u[0] === login && u[1] === senha) ||
@@ -38,18 +35,13 @@ btnEntrar.addEventListener("click", () => {
         window.location.replace("../main/main.html");
     } else {
         erro++;
-
-        alert(
-            "Login ou senha incorretos! Tentativas restantes: " +
-            (3 - erro)
-        );
+        alert("Login ou senha incorretos! Tentativas restantes: " + Math.max(0, 3 - erro));
 
         if (erro >= 3) {
             btnEntrar.disabled = true;
 
             const recuperacao = prompt(
-                "Número máximo de tentativas excedido.\n" +
-                "Digite a senha de recuperação:"
+                "Número máximo de tentativas excedido.\nDigite a senha de recuperação:"
             );
 
             if (recuperacao === "senha123") {
@@ -63,6 +55,8 @@ btnEntrar.addEventListener("click", () => {
     }
 });
 
-btnCriarConta.addEventListener("click", () => {
-    window.location.href = "cadastro.html";
-});
+if (btnCriarConta) {
+    btnCriarConta.addEventListener("click", () => {
+        window.location.href = "cadastro.html";
+    });
+}
