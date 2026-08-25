@@ -1,34 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Abner Project</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BoletimDB</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <header>
-    <img src="../imgs/Nightwing-logo.png" alt="" id="logo" />
-  <h1>Boletim de Alunos</h1>
-  <button id="btnSair">Sair</button>
+  <header class="topo">
+    <div>
+      <h1>BoletimDB</h1>
+      <p>Gerenciamento de alunos e notas</p>
+    </div>
+    <div class="acoes-topo">
+      <button id="btnTema" type="button">🌙 Tema</button>
+      <button id="btnSair" type="button">Sair</button>
+    </div>
   </header>
-  
 
-  <div class="form">
-    <input type="text" id="nome" placeholder="Nome do Aluno" />
-    <input type="text" id="turma" placeholder="Turma" />
-    <input type="number" id="nota1" placeholder="1º Nota" />
-    <input type="number" id="nota2" placeholder="2º Nota" />
-    <input type="number" id="nota3" placeholder="3º Nota" />
-    <button id="btnSalvar">Salvar</button>
-  </div>
+  <main class="container">
+    <section class="dashboard">
+      <div class="card"><span>👨‍🎓</span><div><strong id="totalAlunos">0</strong><small>Alunos</small></div></div>
+      <div class="card aprovado"><span>✅</span><div><strong id="totalAprovados">0</strong><small>Aprovados</small></div></div>
+      <div class="card reprovado"><span>❌</span><div><strong id="totalReprovados">0</strong><small>Reprovados</small></div></div>
+      <div class="card"><span>📊</span><div><strong id="mediaTurma">0,00</strong><small>Média geral</small></div></div>
+    </section>
 
-  <div class="filtro">
-    <input type="text" id="busca" placeholder="Buscar por nome" />
-  </div>
+    <section class="formulario">
+      <h2>Cadastrar aluno</h2>
+      <form id="formAluno">
+        <input id="nome" type="text" placeholder="Nome do aluno" required>
+        <input id="turma" type="text" placeholder="Turma" required>
+        <input id="nota1" type="number" min="0" max="10" step="0.01" placeholder="Nota 1" required>
+        <input id="nota2" type="number" min="0" max="10" step="0.01" placeholder="Nota 2" required>
+        <input id="nota3" type="number" min="0" max="10" step="0.01" placeholder="Nota 3" required>
+        <button id="btnSalvar" type="submit">Cadastrar aluno</button>
+      </form>
+    </section>
 
-  <ul id="lista"></ul>
-  <script type="module" src="./main.js"></script>
+    <section class="controles">
+      <input id="busca" type="search" placeholder="🔎 Pesquisar por nome...">
+      <select id="filtroTurma">
+        <option value="">Todas as turmas</option>
+      </select>
+      <select id="ordenacao">
+        <option value="nome-asc">Nome A-Z</option>
+        <option value="nome-desc">Nome Z-A</option>
+        <option value="media-desc">Maior média</option>
+        <option value="media-asc">Menor média</option>
+      </select>
+    </section>
+
+    <section class="lista-container">
+      <h2>Alunos cadastrados</h2>
+      <ul id="lista"></ul>
+      <p id="semResultados" class="sem-resultados">Nenhum aluno encontrado.</p>
+    </section>
+  </main>
+
+  <script type="module" src="main.js"></script>
 </body>
 </html>
