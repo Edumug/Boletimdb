@@ -5,11 +5,12 @@
 }
 
 :root{
-  --fundo:#ffffff;
-  --caixa:#464444;
-  --input:#0c2750;
-  --borda:#271402;
-  --texto:white;
+  --fundo:#f4f6f8;
+  --caixa:#ffffff;
+  --input:#eaf1f8;
+  --borda:#d7dce1;
+  --texto:#222222;
+  --texto-secundario:#666666;
 }
 
 body{
@@ -27,6 +28,7 @@ header{
   min-height:10vh;
   padding:10px 25px;
   background-color:rgb(0,102,255);
+  color:white;
 }
 
 #logo{
@@ -35,14 +37,8 @@ header{
   height:auto;
 }
 
-.titulo-header h1{
-  font-size:25px;
-}
-
-.titulo-header p{
-  font-size:14px;
-  opacity:.85;
-}
+.titulo-header h1{font-size:25px;}
+.titulo-header p{font-size:14px;opacity:.85;}
 
 .acoes-topo{
   margin-left:auto;
@@ -58,8 +54,8 @@ button{
 }
 
 #btnTema{
-  background:#fff;
-  color:#222;
+  background:#ffffff;
+  color:#222222;
 }
 
 #btnSair{
@@ -69,9 +65,7 @@ button{
   font-weight:bold;
 }
 
-#btnSair:hover{
-  background-color:#b71c1c;
-}
+#btnSair:hover{background-color:#b71c1c;}
 
 .conteudo{
   width:95%;
@@ -95,15 +89,11 @@ button{
   border:1px solid var(--borda);
   border-radius:8px;
   min-width:145px;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
 }
 
-.card b{
-  font-size:22px;
-}
-
-.card span{
-  font-size:14px;
-}
+.card b{font-size:22px;}
+.card span{font-size:14px;color:var(--texto-secundario);}
 
 .form,.filtro{
   margin-bottom:20px;
@@ -118,26 +108,17 @@ input,select{
   padding:12px;
   border-radius:10px;
   background-color:var(--input);
-  color:white;
-  border:1px solid transparent;
+  color:var(--texto);
+  border:1px solid var(--borda);
   outline:none;
 }
 
-.form input{
-  width:150px;
-}
+input::placeholder{color:#777;}
 
-.form input:first-child{
-  width:210px;
-}
-
-.filtro input{
-  width:300px;
-}
-
-select{
-  cursor:pointer;
-}
+.form input{width:150px;}
+.form input:first-child{width:210px;}
+.filtro input{width:300px;}
+select{cursor:pointer;}
 
 #btnSalvar{
   padding:10px 18px;
@@ -146,13 +127,9 @@ select{
   font-weight:bold;
 }
 
-#btnSalvar:hover{
-  background:#0052cc;
-}
+#btnSalvar:hover{background:#0052cc;}
 
-h2{
-  margin-bottom:12px;
-}
+h2{margin-bottom:12px;}
 
 ul{
   list-style-type:none;
@@ -169,19 +146,12 @@ li{
   background-color:var(--caixa);
   border:1px solid var(--borda);
   border-radius:5px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
 
-li:hover{
-  background-color:#313131;
-}
-
-.campo-editar{
-  width:100px;
-}
-
-li .media{
-  white-space:nowrap;
-}
+li:hover{background-color:#f0f2f4;}
+.campo-editar{width:100px;}
+li .media{white-space:nowrap;}
 
 .resultado{
   font-weight:bold;
@@ -189,13 +159,8 @@ li .media{
   text-align:center;
 }
 
-.resultado.aprovado{
-  color:#4caf50;
-}
-
-.resultado.reprovado{
-  color:#ff5252;
-}
+.resultado.aprovado{color:#2e7d32;}
+.resultado.reprovado{color:#d32f2f;}
 
 .btn-salvar-alteracoes{
   background:#0066ff;
@@ -211,44 +176,32 @@ li .media{
 
 .sem-resultados{
   text-align:center;
-  color:#aaa;
+  color:#777;
   padding:15px;
 }
 
+/* Tema escuro */
 body.tema-escuro{
-  --fundo:#111;
+  --fundo:#111111;
   --caixa:#303030;
+  --input:#0c2750;
+  --borda:#271402;
+  --texto:white;
+  --texto-secundario:#cccccc;
 }
 
+body.tema-escuro li:hover{background-color:#3a3a3a;}
+body.tema-escuro .card span{color:#cccccc;}
+
 @media(max-width:900px){
-  header{
-    flex-wrap:wrap;
-  }
-
-  .acoes-topo{
-    margin-left:0;
-  }
-
-  li{
-    flex-wrap:wrap;
-  }
+  header{flex-wrap:wrap;}
+  .acoes-topo{margin-left:0;}
+  li{flex-wrap:wrap;}
 }
 
 @media(max-width:600px){
-  #logo{
-    width:100px;
-  }
-
-  .form,.filtro{
-    align-items:stretch;
-    flex-direction:column;
-  }
-
-  .form input,.form input:first-child,.filtro input,select{
-    width:100%;
-  }
-
-  li .campo-editar{
-    width:100%;
-  }
+  #logo{width:100px;}
+  .form,.filtro{align-items:stretch;flex-direction:column;}
+  .form input,.form input:first-child,.filtro input,select{width:100%;}
+  li .campo-editar{width:100%;}
 }
