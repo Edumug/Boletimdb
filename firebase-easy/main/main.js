@@ -4,12 +4,12 @@ if (sessionStorage.getItem("logado") !== "true") {
   window.location.replace("../login/login.html");
 }
 
-const formAluno = document.getElementById("formAluno");
 const nomeInput = document.getElementById("nome");
 const turmaInput = document.getElementById("turma");
 const nota1Input = document.getElementById("nota1");
 const nota2Input = document.getElementById("nota2");
 const nota3Input = document.getElementById("nota3");
+const btnSalvar = document.getElementById("btnSalvar");
 const lista = document.getElementById("lista");
 const buscaInput = document.getElementById("busca");
 const filtroTurma = document.getElementById("filtroTurma");
@@ -21,8 +21,7 @@ const btnTema = document.getElementById("btnTema");
 let alunosCache = {};
 
 function notaValida(valor) {
-  const nota = Number(valor);
-  return Number.isFinite(nota) && nota >= 0 && nota <= 10;
+  return Number.isFinite(Number(valor)) && Number(valor) >= 0 && Number(valor) <= 10;
 }
 
 function calcularMedia(n1, n2, n3) {
@@ -33,9 +32,7 @@ function resultado(media) {
   return Number(media) >= 7 ? "Aprovado" : "Reprovado";
 }
 
-formAluno.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
+btnSalvar.addEventListener("click", async () => {
   const nome = nomeInput.value.trim();
   const turma = turmaInput.value.trim();
   const nota1 = Number(nota1Input.value);
@@ -51,8 +48,12 @@ formAluno.addEventListener("submit", async (event) => {
 
   try {
     await salvar(nome, turma, nota1, nota2, nota3, mediafinal);
-    formAluno.reset();
-    await atualizarLista();
+    nomeInput.value = "";
+    turmaInput.value = "";
+    nota1Input.value = "";
+    nota2Input.value = "";
+    nota3Input.value = "";
+    await carregarDados();
   } catch (err) {
     console.error("Erro ao salvar:", err);
     alert("Ocorreu um erro ao salvar os dados.");
@@ -75,14 +76,10 @@ async function carregarDados() {
   }
 }
 
-async function atualizarLista() {
-  await carregarDados();
-}
-
 function atualizarFiltroTurmas() {
   const turmaAtual = filtroTurma.value;
   const turmas = [...new Set(Object.values(alunosCache).map(a => a.turma).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
+    .sort((a, b) => String(a).localeCompare(String(b)));
 
   filtroTurma.innerHTML = '<option value="">Todas as turmas</option>';
   turmas.forEach(turma => {
@@ -98,7 +95,7 @@ function atualizarFiltroTurmas() {
 function atualizarDashboard() {
   const alunos = Object.values(alunosCache);
   const aprovados = alunos.filter(a => a.resul === "Aprovado").length;
-  const reprovados = alunos.length - aprovados;
+  const reprovados = alunos.filter(a => a.resul === "Reprovado").length;
   const media = alunos.length
     ? alunos.reduce((soma, a) => soma + Number(a.mediafinal || 0), 0) / alunos.length
     : 0;
@@ -132,16 +129,18 @@ function aplicarFiltros() {
   alunos.forEach(([id, aluno]) => renderItem(id, aluno));
 }
 
-function criarInput(type, value, classe = "campo-editar") {
+function criarInput(type, value) {
   const input = document.createElement("input");
   input.type = type;
   input.value = value ?? "";
-  input.className = classe;
+  input.className = "campo-editar";
+
   if (type === "number") {
     input.min = "0";
     input.max = "10";
     input.step = "0.01";
   }
+
   return input;
 }
 
@@ -166,6 +165,7 @@ function renderItem(id, pessoa) {
   const btnAlterar = document.createElement("button");
   btnAlterar.textContent = "Salvar alterações";
   btnAlterar.className = "btn-salvar-alteracoes";
+
   btnAlterar.addEventListener("click", async () => {
     const novoNome = nome.value.trim();
     const novaTurma = turma.value.trim();
@@ -183,7 +183,7 @@ function renderItem(id, pessoa) {
 
     try {
       await editar(id, novoNome, novaTurma, novaNota1, novaNota2, novaNota3, novaMedia, novoResultado);
-      await atualizarLista();
+      await carregarDados();
     } catch (err) {
       console.error("Erro ao atualizar:", err);
       alert("Ocorreu um erro ao salvar as alterações.");
@@ -193,12 +193,13 @@ function renderItem(id, pessoa) {
   const btnExcluir = document.createElement("button");
   btnExcluir.textContent = "Excluir";
   btnExcluir.className = "btn-excluir";
+
   btnExcluir.addEventListener("click", async () => {
     if (!confirm(`Tem certeza que deseja excluir ${pessoa.nome}?`)) return;
 
     try {
       await deletar(id);
-      await atualizarLista();
+      await carregarDados();
     } catch (err) {
       console.error("Erro ao excluir:", err);
       alert("Ocorreu um erro ao excluir o cadastro.");
@@ -218,8 +219,9 @@ const temaSalvo = localStorage.getItem("tema");
 if (temaSalvo === "escuro") document.body.classList.add("tema-escuro");
 
 function atualizarBotaoTema() {
-  btnTema.textContent = document.body.classList.contains("tema-escuro") ? "☀️ Tema" : "🌙 Tema";
+  btnTema.textContent = document.body.classList.contains("tema-escuro") ? "☀️" : "🌙";
 }
+
 atualizarBotaoTema();
 
 btnTema.addEventListener("click", () => {
@@ -228,4 +230,4 @@ btnTema.addEventListener("click", () => {
   atualizarBotaoTema();
 });
 
-window.addEventListener("load", carregarDados);
+carregarDados();
