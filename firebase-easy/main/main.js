@@ -1,413 +1,231 @@
 import { salvar, buscarTodos, editar, deletar } from "../crud.js";
+
 if (sessionStorage.getItem("logado") !== "true") {
-    window.location.replace("../login/login.html");
+  window.location.replace("../login/login.html");
 }
+
+const formAluno = document.getElementById("formAluno");
 const nomeInput = document.getElementById("nome");
 const turmaInput = document.getElementById("turma");
 const nota1Input = document.getElementById("nota1");
 const nota2Input = document.getElementById("nota2");
 const nota3Input = document.getElementById("nota3");
-
 const lista = document.getElementById("lista");
 const buscaInput = document.getElementById("busca");
-const btnSalvar = document.getElementById("btnSalvar");
+const filtroTurma = document.getElementById("filtroTurma");
+const ordenacao = document.getElementById("ordenacao");
+const semResultados = document.getElementById("semResultados");
+const btnSair = document.getElementById("btnSair");
+const btnTema = document.getElementById("btnTema");
 
+let alunosCache = {};
 
-/* =========================
-   CADASTRAR NOVO ALUNO
-========================= */
+function notaValida(valor) {
+  const nota = Number(valor);
+  return Number.isFinite(nota) && nota >= 0 && nota <= 10;
+}
 
-btnSalvar.addEventListener("click", async (event) => {
+function calcularMedia(n1, n2, n3) {
+  return ((Number(n1) + Number(n2) + Number(n3)) / 3).toFixed(2);
+}
+
+function resultado(media) {
+  return Number(media) >= 7 ? "Aprovado" : "Reprovado";
+}
+
+formAluno.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const nome = nomeInput.value.trim();
   const turma = turmaInput.value.trim();
-  const nota1 = nota1Input.value.trim();
-  const nota2 = nota2Input.value.trim();
-  const nota3 = nota3Input.value.trim();
+  const nota1 = Number(nota1Input.value);
+  const nota2 = Number(nota2Input.value);
+  const nota3 = Number(nota3Input.value);
 
-  if (!nome || !turma || !nota1 || !nota2 || !nota3) {
-    alert("Preencha todos os campos!");
+  if (!nome || !turma || !notaValida(nota1) || !notaValida(nota2) || !notaValida(nota3)) {
+    alert("Preencha todos os campos corretamente. As notas devem estar entre 0 e 10.");
     return;
   }
 
-  const mediafinal = (
-    (Number(nota1) +
-      Number(nota2) +
-      Number(nota3)) / 3
-  ).toFixed(2);
-
-  const resul =
-    Number(mediafinal) >= 7
-      ? "Aprovado"
-      : "Reprovado";
+  const mediafinal = calcularMedia(nota1, nota2, nota3);
 
   try {
-
-    await salvar(
-      nome,
-      turma,
-      nota1,
-      nota2,
-      nota3,
-      mediafinal,
-      resul
-    );
-
-    nomeInput.value = "";
-    turmaInput.value = "";
-    nota1Input.value = "";
-    nota2Input.value = "";
-    nota3Input.value = "";
-
-    await atualizarLista(
-      buscaInput.value.toLowerCase()
-    );
-
+    await salvar(nome, turma, nota1, nota2, nota3, mediafinal);
+    formAluno.reset();
+    await atualizarLista();
   } catch (err) {
-
     console.error("Erro ao salvar:", err);
-
     alert("Ocorreu um erro ao salvar os dados.");
-
   }
 });
 
-
-/* =========================
-   PESQUISA
-========================= */
-
-buscaInput.addEventListener("input", () => {
-
-  atualizarLista(
-    buscaInput.value.toLowerCase()
-  );
-
-});
-
-
-/* =========================
-   RENDERIZAR ALUNO
-========================= */
-
-function renderItem(id, pessoa, filtro) {
-
-  if (
-    !pessoa.nome ||
-    !pessoa.nome.toLowerCase().includes(filtro)
-  ) {
-    return;
-  }
-
-
-  const li = document.createElement("li");
-
-
-  /* =========================
-     NOME
-  ========================= */
-
-  const nome = document.createElement("input");
-
-  nome.type = "text";
-  nome.value = pessoa.nome;
-  nome.className = "campo-editar";
-
-  li.appendChild(nome);
-
-
-  /* =========================
-     TURMA
-  ========================= */
-
-  const turma = document.createElement("input");
-
-  turma.type = "text";
-  turma.value = pessoa.turma;
-  turma.className = "campo-editar";
-
-  li.appendChild(turma);
-
-
-  /* =========================
-     NOTA 1
-  ========================= */
-
-  const nota1 = document.createElement("input");
-
-  nota1.type = "number";
-  nota1.value = pessoa.nota1;
-  nota1.className = "campo-editar";
-
-  li.appendChild(nota1);
-
-
-  /* =========================
-     NOTA 2
-  ========================= */
-
-  const nota2 = document.createElement("input");
-
-  nota2.type = "number";
-  nota2.value = pessoa.nota2;
-  nota2.className = "campo-editar";
-
-  li.appendChild(nota2);
-
-
-  /* =========================
-     NOTA 3
-  ========================= */
-
-  const nota3 = document.createElement("input");
-
-  nota3.type = "number";
-  nota3.value = pessoa.nota3;
-  nota3.className = "campo-editar";
-
-  li.appendChild(nota3);
-
-
-  /* =========================
-     MÉDIA
-  ========================= */
-
-  const media = document.createElement("span");
-
-  media.textContent =
-    ` Média: ${pessoa.mediafinal} `;
-
-  media.className = "media";
-
-  li.appendChild(media);
-
-
-  /* =========================
-     RESULTADO
-  ========================= */
-
-  const resultado = document.createElement("span");
-
-  resultado.textContent = pessoa.resul;
-
-  resultado.style.fontWeight = "bold";
-
-  resultado.style.color =
-    pessoa.resul === "Aprovado"
-      ? "green"
-      : "red";
-
-  li.appendChild(resultado);
-
-
-  /* =========================
-     BOTÃO SALVAR ALTERAÇÕES
-  ========================= */
-
-  const btnAlterar =
-    document.createElement("button");
-
-  btnAlterar.textContent =
-    "Salvar alterações";
-
-  btnAlterar.className =
-    "btn-salvar-alteracoes";
-
-
-  btnAlterar.addEventListener(
-    "click",
-    async () => {
-
-      const novoNome =
-        nome.value.trim();
-
-      const novaTurma =
-        turma.value.trim();
-
-      const novaNota1 =
-        nota1.value.trim();
-
-      const novaNota2 =
-        nota2.value.trim();
-
-      const novaNota3 =
-        nota3.value.trim();
-
-
-      if (
-        !novoNome ||
-        !novaTurma ||
-        !novaNota1 ||
-        !novaNota2 ||
-        !novaNota3
-      ) {
-
-        alert(
-          "Preencha todos os campos!"
-        );
-
-        return;
-
-      }
-
-
-      /* Calcular nova média */
-
-      const novaMedia = (
-        (Number(novaNota1) +
-          Number(novaNota2) +
-          Number(novaNota3)) / 3
-      ).toFixed(2);
-
-
-      /* Calcular resultado */
-
-      const novoResultado =
-        Number(novaMedia) >= 7
-          ? "Aprovado"
-          : "Reprovado";
-
-
-      try {
-
-        await editar(
-          id,
-          novoNome,
-          novaTurma,
-          novaNota1,
-          novaNota2,
-          novaNota3,
-          novaMedia,
-          novoResultado
-        );
-
-        await atualizarLista(
-          buscaInput.value.toLowerCase()
-        );
-
-
-      } catch (err) {
-
-        console.error(
-          "Erro ao atualizar:",
-          err
-        );
-
-        alert(
-          "Ocorreu um erro ao salvar as alterações."
-        );
-
-      }
-
-    }
-  );
-
-
-  li.appendChild(btnAlterar);
-
-
-  /* =========================
-     BOTÃO EXCLUIR
-  ========================= */
-
-  const btnExcluir =
-    document.createElement("button");
-
-  btnExcluir.textContent =
-    "Excluir";
-
-  btnExcluir.className =
-    "btn-excluir";
-
-
-  btnExcluir.addEventListener(
-    "click",
-    async () => {
-
-      if (
-        confirm(
-          "Tem certeza que deseja excluir este cadastro?"
-        )
-      ) {
-
-        try {
-
-          await deletar(id);
-
-          await atualizarLista(
-            buscaInput.value.toLowerCase()
-          );
-
-        } catch (err) {
-
-          console.error(
-            "Erro ao excluir:",
-            err
-          );
-
-          alert(
-            "Ocorreu um erro ao excluir o cadastro."
-          );
-
-        }
-
-      }
-
-    }
-  );
-
-
-  li.appendChild(btnExcluir);
-
-  lista.appendChild(li);
-}
-
-
-/* =========================
-   ATUALIZAR LISTA
-========================= */
-
-async function atualizarLista(filtro = "") {
+buscaInput.addEventListener("input", aplicarFiltros);
+filtroTurma.addEventListener("change", aplicarFiltros);
+ordenacao.addEventListener("change", aplicarFiltros);
+
+async function carregarDados() {
   try {
-    const dados = await buscarTodos();
-
-    lista.innerHTML = "";
-
-    const alunos = Object.entries(dados);
-
-    alunos.sort((a, b) =>
-      a[1].nome.localeCompare(b[1].nome)
-    );
-
-    for (const [id, pessoa] of alunos) {
-      renderItem(
-        id,
-        pessoa,
-        filtro.toLowerCase()
-      );
-    }
-
+    alunosCache = await buscarTodos();
+    atualizarFiltroTurmas();
+    atualizarDashboard();
+    aplicarFiltros();
   } catch (err) {
     console.error("Erro ao buscar dados:", err);
     alert("Não foi possível carregar a lista.");
   }
-};
+}
 
+async function atualizarLista() {
+  await carregarDados();
+}
 
-/* =========================
-   CARREGAR PÁGINA
-========================= */
+function atualizarFiltroTurmas() {
+  const turmaAtual = filtroTurma.value;
+  const turmas = [...new Set(Object.values(alunosCache).map(a => a.turma).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b));
 
-window.addEventListener(
-  "load",
-  () => {
-    atualizarLista();
+  filtroTurma.innerHTML = '<option value="">Todas as turmas</option>';
+  turmas.forEach(turma => {
+    const option = document.createElement("option");
+    option.value = turma;
+    option.textContent = turma;
+    filtroTurma.appendChild(option);
+  });
+
+  if (turmas.includes(turmaAtual)) filtroTurma.value = turmaAtual;
+}
+
+function atualizarDashboard() {
+  const alunos = Object.values(alunosCache);
+  const aprovados = alunos.filter(a => a.resul === "Aprovado").length;
+  const reprovados = alunos.length - aprovados;
+  const media = alunos.length
+    ? alunos.reduce((soma, a) => soma + Number(a.mediafinal || 0), 0) / alunos.length
+    : 0;
+
+  document.getElementById("totalAlunos").textContent = alunos.length;
+  document.getElementById("totalAprovados").textContent = aprovados;
+  document.getElementById("totalReprovados").textContent = reprovados;
+  document.getElementById("mediaTurma").textContent = media.toFixed(2).replace(".", ",");
+}
+
+function aplicarFiltros() {
+  const busca = buscaInput.value.trim().toLowerCase();
+  const turma = filtroTurma.value;
+  const modo = ordenacao.value;
+
+  let alunos = Object.entries(alunosCache).filter(([, aluno]) => {
+    const nomeOk = String(aluno.nome || "").toLowerCase().includes(busca);
+    const turmaOk = !turma || aluno.turma === turma;
+    return nomeOk && turmaOk;
+  });
+
+  alunos.sort((a, b) => {
+    if (modo === "nome-desc") return String(b[1].nome).localeCompare(String(a[1].nome));
+    if (modo === "media-desc") return Number(b[1].mediafinal) - Number(a[1].mediafinal);
+    if (modo === "media-asc") return Number(a[1].mediafinal) - Number(b[1].mediafinal);
+    return String(a[1].nome).localeCompare(String(b[1].nome));
+  });
+
+  lista.innerHTML = "";
+  semResultados.style.display = alunos.length ? "none" : "block";
+  alunos.forEach(([id, aluno]) => renderItem(id, aluno));
+}
+
+function criarInput(type, value, classe = "campo-editar") {
+  const input = document.createElement("input");
+  input.type = type;
+  input.value = value ?? "";
+  input.className = classe;
+  if (type === "number") {
+    input.min = "0";
+    input.max = "10";
+    input.step = "0.01";
   }
-);
-const btnSair = document.getElementById("btnSair");
+  return input;
+}
+
+function renderItem(id, pessoa) {
+  const li = document.createElement("li");
+  li.className = "aluno-item";
+
+  const nome = criarInput("text", pessoa.nome);
+  const turma = criarInput("text", pessoa.turma);
+  const nota1 = criarInput("number", pessoa.nota1);
+  const nota2 = criarInput("number", pessoa.nota2);
+  const nota3 = criarInput("number", pessoa.nota3);
+
+  const media = document.createElement("span");
+  media.className = "media";
+  media.textContent = `Média: ${pessoa.mediafinal}`;
+
+  const resultadoSpan = document.createElement("span");
+  resultadoSpan.className = `resultado ${pessoa.resul === "Aprovado" ? "aprovado" : "reprovado"}`;
+  resultadoSpan.textContent = pessoa.resul;
+
+  const btnAlterar = document.createElement("button");
+  btnAlterar.textContent = "Salvar alterações";
+  btnAlterar.className = "btn-salvar-alteracoes";
+  btnAlterar.addEventListener("click", async () => {
+    const novoNome = nome.value.trim();
+    const novaTurma = turma.value.trim();
+    const novaNota1 = Number(nota1.value);
+    const novaNota2 = Number(nota2.value);
+    const novaNota3 = Number(nota3.value);
+
+    if (!novoNome || !novaTurma || !notaValida(novaNota1) || !notaValida(novaNota2) || !notaValida(novaNota3)) {
+      alert("Preencha os dados corretamente. As notas devem estar entre 0 e 10.");
+      return;
+    }
+
+    const novaMedia = calcularMedia(novaNota1, novaNota2, novaNota3);
+    const novoResultado = resultado(novaMedia);
+
+    try {
+      await editar(id, novoNome, novaTurma, novaNota1, novaNota2, novaNota3, novaMedia, novoResultado);
+      await atualizarLista();
+    } catch (err) {
+      console.error("Erro ao atualizar:", err);
+      alert("Ocorreu um erro ao salvar as alterações.");
+    }
+  });
+
+  const btnExcluir = document.createElement("button");
+  btnExcluir.textContent = "Excluir";
+  btnExcluir.className = "btn-excluir";
+  btnExcluir.addEventListener("click", async () => {
+    if (!confirm(`Tem certeza que deseja excluir ${pessoa.nome}?`)) return;
+
+    try {
+      await deletar(id);
+      await atualizarLista();
+    } catch (err) {
+      console.error("Erro ao excluir:", err);
+      alert("Ocorreu um erro ao excluir o cadastro.");
+    }
+  });
+
+  li.append(nome, turma, nota1, nota2, nota3, media, resultadoSpan, btnAlterar, btnExcluir);
+  lista.appendChild(li);
+}
 
 btnSair.addEventListener("click", () => {
-    sessionStorage.removeItem("logado");
-    window.location.replace("../login/login.html");
+  sessionStorage.removeItem("logado");
+  window.location.replace("../login/login.html");
 });
+
+const temaSalvo = localStorage.getItem("tema");
+if (temaSalvo === "escuro") document.body.classList.add("tema-escuro");
+
+function atualizarBotaoTema() {
+  btnTema.textContent = document.body.classList.contains("tema-escuro") ? "☀️ Tema" : "🌙 Tema";
+}
+atualizarBotaoTema();
+
+btnTema.addEventListener("click", () => {
+  document.body.classList.toggle("tema-escuro");
+  localStorage.setItem("tema", document.body.classList.contains("tema-escuro") ? "escuro" : "claro");
+  atualizarBotaoTema();
+});
+
+window.addEventListener("load", carregarDados);
