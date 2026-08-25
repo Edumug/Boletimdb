@@ -1,122 +1,16 @@
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box; /* Garante que o padding não aumente o tamanho real do input */
-}
-
-body {
-    width: 100vw;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    background-color: rgba(27, 27, 27, 0.986);
-    color: white;
-
-    display: flex;
-    flex-direction: column;
-}
-.conteudo {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-}
-
-#esquerda {
-    flex: 1;
-    display: flex;
-    background-color: rgb(15, 34, 70);
-    justify-content: center;
-    align-items: center;
-    color: beige;
-}
-
-#direita {
-    flex: 1;
-    display: flex;
-    background-color: rgb(136, 149, 185);
-    justify-content: center;
-    align-items: center;
-    color: black;
-    flex-direction: column;
-}
-
-
-header {
-  display: flex;
-  align-items: center;
-  height: 10vh;
-  background-color: rgb(0, 102, 255);
-  padding: 0 20px; /* Dá um espaço nas laterais do logo e título */ 
-}
-
-#logo {
-  width: auto;
-  height: 80%; /* Faz o logo se adaptar à altura do header automaticamente */
-  margin-right: 15px;
-}
-
-.form {
-  flex-grow: 1; /* Ocupa o restante do espaço da tela verticalmente */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 15px; /* Cria um espaçamento perfeito entre cada input e botão */
-}
-
-/* Estilo unificado para inputs dentro do formulário */
-.form input {
-  width: 100%;
-  max-width: 300px; /* Tamanho confortável para leitura */
-  padding: 12px;
-  border-radius: 10px;
-  background-color: rgb(12, 39, 80);
-  color: white;
-  border: 1px solid transparent;
-  outline: none;
-}
-
-.form input:focus {
-  border-color: rgb(0, 102, 255); /* Destaca o input ao clicar */
-}
-
-/* Estilo do botão */
-.form button {
-  width: 100%;
-  max-width: 300px; /* Mesma largura dos inputs para alinhar */
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background-color: rgb(0, 102, 255);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.form button:hover {
-  background-color: rgb(0, 80, 200);
-}
-
-/* Estilos extras que você já tinha */
-li:hover {
-  background-color: #313131;
-}
-
-.senha-container {
-    width: 100%;
-    max-width: 300px;
-    display: flex;
-    gap: 5px;
-}
-
-.senha-container input {
-    flex: 1;
-    width: auto;
-}
-
-#btnMostrarSenha {
-    width: 30px;
-    height: auto;
-    border: none;
-    color: white;
-}
+* { padding: 0; margin: 0; box-sizing: border-box; }
+body { width: 100vw; height: 100vh; font-family: Arial, sans-serif; background-color: rgba(27,27,27,.986); color: white; display:flex; flex-direction:column; }
+.conteudo { flex:1; display:flex; flex-direction:row; }
+#esquerda { flex:1; display:flex; background-color:rgb(15,34,70); justify-content:center; align-items:center; color:beige; }
+#direita { flex:1; display:flex; background-color:rgb(136,149,185); justify-content:center; align-items:center; color:black; flex-direction:column; }
+header { display:flex; align-items:center; height:10vh; background-color:rgb(0,102,255); padding:0 20px; }
+#logo { width:auto; height:80%; margin-right:15px; }
+.form { flex-grow:1; display:flex; justify-content:center; align-items:center; flex-direction:column; gap:15px; }
+.form input { width:100%; max-width:300px; padding:12px; border-radius:10px; background-color:rgb(12,39,80); color:white; border:1px solid transparent; outline:none; }
+.form input:focus { border-color:rgb(0,102,255); }
+.form button, #btnCriarConta { width:100%; max-width:300px; padding:12px; border-radius:10px; border:none; background-color:rgb(0,102,255); color:white; font-weight:bold; cursor:pointer; transition:background .2s; text-align:center; text-decoration:none; font-size:14px; font-family:Arial,sans-serif; }
+.form button:hover, #btnCriarConta:hover { background-color:rgb(0,80,200); }
+.senha-container { width:100%; max-width:300px; display:flex; gap:5px; }
+.senha-container input { flex:1; width:auto; }
+#btnMostrarSenha { width:30px; height:auto; border:none; color:white; cursor:pointer; }
+@media(max-width:650px) { .conteudo { flex-direction:column; } #esquerda { min-height:30vh; } #direita { min-height:70vh; } }
